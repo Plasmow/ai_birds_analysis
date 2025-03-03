@@ -2,7 +2,7 @@ import pandas as pd
 import os
 
 # Charger le fichier CSV dans un DataFrame
-df = pd.read_csv('/Users/r/Documents/projetS6/ai_birds_analysis/Pressure data/FARMSIZE_rendements.csv')
+df = pd.read_csv('/Pressure data/FARMSIZE_rendements.csv')
 
 # Afficher les premières lignes pour vérifier
 print(df.head())
