@@ -5,19 +5,19 @@ import os
 file_path = "Pressure data/FARMSIZE.csv"
 df = pd.read_csv(file_path, sep=";", decimal=",", index_col=0)
 
-# Afficher les premières lignes pour vérifier
+# Vérifier les premières lignes pour avoir un aperçu des données
+print("Fichier chargé :")
 print(df.head())
 
-# Calculer la différence relative entre les colonnes (en commençant par C)
-for i in range(2, len(df.columns)-1, 2):  # Commence à l'indice 2 (colonne C)
-    col1 = df.columns[i]     # Par exemple 'C'
-    col2 = df.columns[i+1]   # Par exemple 'E'
+# Calculer la différence relative pour chaque ligne et chaque colonne
+for i in range(2, len(df.columns)):  # Commence à l'indice 2 (colonne C)
+    col = df.columns[i]  # Colonne actuelle (par exemple, C, E, G, etc.)
     
-    # Calcul de la différence relative et ajout dans une nouvelle colonne
-    new_col_name = f'{col2}_{col1}_rendements'  # Nouveau nom pour la colonne calculée
-    df[new_col_name] = (df[col2] - df[col1]) / df[col1]
+    # Calcul de la différence relative : (valeur actuelle - valeur précédente) / valeur précédente
+    df[f'{col}_rendements'] = df[col].pct_change()  # pct_change() calcule la différence relative
 
-# Afficher le DataFrame avec les nouvelles colonnes pour vérifier
+# Afficher les nouvelles colonnes pour vérifier
+print("\nDonnées après ajout des colonnes de rendements :")
 print(df.head())
 
 # Afficher le répertoire actuel
@@ -30,7 +30,7 @@ os.chdir('/Users/r/Documents/projetS6/ai_birds_analysis/Pressure data')
 print("Répertoire actuel après changement :", os.getcwd())
 
 # Sauvegarder les résultats dans un nouveau fichier CSV
-df.to_csv('FARMSIZE_with_rendements.csv', index=False)
+output_file = 'FARMSIZE_with_rendements.csv'
+df.to_csv(output_file, index=False)
 
-# Si vous souhaitez écraser le fichier existant, utilisez :
-df.to_csv('FARMSIZE_with_rendements.csv', index=False)
+print(f"Fichier sauvegardé avec succès sous {output_file}.")
