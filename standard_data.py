@@ -2,7 +2,10 @@ import pandas as pd
 import os
 
 # Charger le fichier CSV dans un DataFrame
-df = pd.read_csv('/Pressure data/FARMSIZE_rendements.csv')
+
+file_path = "Pressure data/FARMSIZE.csv"
+df = pd.read_csv(file_path, sep=";", decimal=",", index_col=0)
+
 
 # Afficher les premières lignes pour vérifier
 print(df.head())
