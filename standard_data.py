@@ -2,7 +2,9 @@ import pandas as pd
 import os
 
 # Charger le fichier CSV dans un DataFrame
-file_path = "/Users/louis/Desktop/Tronc commun/Projet IA, Boidiversité/ai_birds_analysis/Pressure data/UAA.csv"
+
+file_path = "Pressure data/FARMSIZE.csv"
+file_path = "/Users/r/Documents/projetS6/ai_birds_analysis/Pressure data/URB.csv"
 df = pd.read_csv(file_path, sep=";", decimal=",", index_col=0)
 
 # Vérifier les premières lignes pour avoir un aperçu des données
@@ -30,7 +32,7 @@ os.chdir('/Users/louis/Desktop/Tronc commun/Projet IA, Boidiversité/ai_birds_an
 print("Répertoire actuel après changement :", os.getcwd())
 
 # Sauvegarder les résultats dans un nouveau fichier CSV
-output_file = 'UAA_with_rendements.csv'
+output_file = 'URB_with_rendements.csv'
 df.to_csv(output_file, index=False)
 
 print(f"Fichier sauvegardé avec succès sous {output_file}.")
