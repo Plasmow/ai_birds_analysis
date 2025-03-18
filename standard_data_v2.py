@@ -2,8 +2,8 @@ import pandas as pd
 import os
 
 # Définir les répertoires d'entrée et de sortie
-input_dir = 'BirdCounts'
-output_dir = 'BirdCounts_with_rendements'
+input_dir = 'Pressure data'
+output_dir = 'Pressure with rendements'
 
 # Créer le répertoire de sortie s'il n'existe pas
 os.makedirs(output_dir, exist_ok=True)
