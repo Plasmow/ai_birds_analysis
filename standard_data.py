@@ -1,32 +1,38 @@
 import pandas as pd
-import numpy as np
 import os
 
-file_path_example = "Pressure data/FARMSIZE.csv"
-data={}
+# Charger le fichier CSV dans un DataFrame
 
-def load_data(file_path):
-    df = pd.read_csv(file_path, sep=";", decimal=",", index_col=0)
+file_path = "Pressure data/FARMSIZE.csv"
+file_path = "/Users/r/Documents/projetS6/ai_birds_analysis/Pressure data/URB.csv"
+df = pd.read_csv(file_path, sep=";", decimal=",", index_col=0)
 
+# Vérifier les premières lignes pour avoir un aperçu des données
+print("Fichier chargé :")
+print(df.head())
 
-
-    df = df.apply(pd.to_numeric, errors='coerce')
-
-    # Calcul du rendement pour chaque pays en suivant la formule donnée
-    # Utilisation de shift(1) pour obtenir les valeurs de la colonne suivante (t+1)
-    df_normalized = (df.shift(-1) - df) / df
-
-    # Remplacement des valeurs extrêmes par NaN (par exemple, valeurs infinies ou NaN obtenues dans le calcul)
-    df_normalized = df_normalized.replace([np.inf, -np.inf], np.nan)
+# Calculer la différence relative pour chaque ligne et chaque colonne
+for i in range(2, len(df.columns)):  # Commence à l'indice 2 (colonne C)
+    col = df.columns[i]  # Colonne actuelle (par exemple, C, E, G, etc.)
     
-    
-directory='Pressure data'
+    # Calcul de la différence relative : (valeur actuelle - valeur précédente) / valeur précédente
+    df[f'{col}_rendements'] = df[col].pct_change()  # pct_change() calcule la différence relative
 
-def get_all_data(directory):
-    for root, dirs, files in os.walk(directory):
-        for file in files:
-            data[file]= os.path.join(root, file)
+# Afficher les nouvelles colonnes pour vérifier
+print("\nDonnées après ajout des colonnes de rendements :")
+print(df.head())
 
-get_all_data(directory)
+# Afficher le répertoire actuel
+print("Répertoire actuel avant changement :", os.getcwd())
 
-print(data['PLA.csv'])
+# Changer le répertoire de travail
+os.chdir('/Users/r/Documents/projetS6/ai_birds_analysis/Pressure data')
+
+# Vérifier que le répertoire a bien été changé
+print("Répertoire actuel après changement :", os.getcwd())
+
+# Sauvegarder les résultats dans un nouveau fichier CSV
+output_file = 'URB_with_rendements.csv'
+df.to_csv(output_file, index=False)
+
+print(f"Fichier sauvegardé avec succès sous {output_file}.")
