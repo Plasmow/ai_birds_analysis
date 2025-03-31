@@ -14,15 +14,15 @@ def extract_data_for_date_from_folder(folder_path, date):
 
     # Parcourir tous les fichiers dans le dossier
     for filename in os.listdir(folder_path):
-        print(filename)
         if filename.endswith('.csv'):  # Vérifier que le fichier est un CSV
             file_path = os.path.join(folder_path, filename)
 
-            # Charger le fichier CSV dans un DataFrame
+            # Charger le fichier CSV dans un DataFrame en utilisant la première colonne comme index
             df = pd.read_csv(file_path, sep=";", decimal=",", index_col=0)
 
             # Vérifier si la date existe dans l'index
             if date in df.index:
+                print('Date trouvée !')
                 # Extraire les données pour la date donnée
                 row = df.loc[date]
 
@@ -35,7 +35,7 @@ def extract_data_for_date_from_folder(folder_path, date):
     return data_dict
 
 # Exemple d'utilisation
-folder_path = "PressureData_with_rendements"  # Chemin vers le dossier contenant les fichiers CSV
+folder_path = "Pressure data"  # Chemin vers le dossier contenant les fichiers CSV
 date_t = "2010"  # Remplacez par la date souhaitée
 
 data_for_date = extract_data_for_date_from_folder(folder_path, date_t)
