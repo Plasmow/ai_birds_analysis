@@ -2,8 +2,8 @@ import pandas as pd
 import os
 
 # Définir les répertoires d'entrée et de sortie
-input_dir = 'BirdCounts'
-output_dir = 'BirdCounts_with_rendements'
+input_dir = 'BirdCounts_with_rendements'
+output_dir = 'BirdCounts_with_rendements_transformed'
 
 # Créer le répertoire de sortie s'il n'existe pas
 os.makedirs(output_dir, exist_ok=True)
@@ -24,7 +24,7 @@ for filename in os.listdir(input_dir):
             df[f'{col}_rendements'] = df[col].pct_change()  # pct_change() calcule la différence relative
         
         # Sauvegarder les résultats dans un nouveau fichier CSV en conservant la première ligne
-        output_filename = f"{os.path.splitext(filename)[0]}_with_rendements.csv"
+        output_filename = f"{os.path.splitext(filename)[0]}_transformed.csv"
         df.to_csv(os.path.join(output_dir, output_filename), sep=";", decimal=",", index=True)
 
 print("Tous les fichiers ont été traités et sauvegardés avec les rendements.")
