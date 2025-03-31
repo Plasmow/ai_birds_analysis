@@ -4,7 +4,7 @@ import os
 # Charger le fichier CSV dans un DataFrame
 
 file_path = "Pressure data/FARMSIZE.csv"
-file_path = "/Users/r/Documents/projetS6/ai_birds_analysis/Pressure data/URB.csv"
+file_path = "Pressure data/URB.csv"
 df = pd.read_csv(file_path, sep=";", decimal=",", index_col=0)
 
 # Vérifier les premières lignes pour avoir un aperçu des données
