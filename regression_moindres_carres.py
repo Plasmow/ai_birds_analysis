@@ -9,7 +9,6 @@ all_Y = []
 all_X = np.empty((0, 8))
 lst_pressure = [[] for _ in range(8)]
 
-
 # Charger les fichiers CSV
 bird_folder = 'BirdCounts_with_rendements_transformed'
 pressure_folder = 'Pressure_with_rendements'

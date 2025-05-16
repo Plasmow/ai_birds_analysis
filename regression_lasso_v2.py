@@ -22,6 +22,11 @@ for bird_file in os.listdir(bird_folder):
     pressure_path_tab = [os.path.join(pressure_folder, pressure_file) for pressure_file in pressure_files]
     pressure_dfs = [pd.read_csv(pressure_path, delimiter=';') for pressure_path in pressure_path_tab]
 
+    # Prise encompte du phénomène de retard d'action de la pression en comparant l'évolution des pressions entre t-1 et t et l'évolution des populations d'oiseaux entre t et t+1
+    for pressure_df in pressure_dfs:
+        pressure_df['year'] = pressure_df['year'].astype(int)
+        pressure_df['year'] = pressure_df['year']+4
+
     # Fusion des pressions avec les données oiseaux
     merged_df = bird_df.copy()
     for n in range(8):
@@ -79,6 +84,7 @@ for bird_file in os.listdir(bird_folder):
         somme_R_carre += r2_score
         nb_regressions += 1
         print("R² (coefficient de détermination) :", r2_score)
+
 # Régression Lasso globale sur tous les oiseaux
 all_model = Lasso(alpha=0.001).fit(all_X, all_Y)  # `alpha` contrôle la pénalisation L1
 print("Pour l'ensemble des oiseaux")
