@@ -102,7 +102,3 @@ Projet réalisé dans le cadre d’un travail universitaire (niveau Bac+3) — v
 
 ```
 
----
-
-Souhaites-tu une version `.md` téléchargeable directement ? Ou bien un deuxième README simplifié pour usage en présentation orale ?
-```
