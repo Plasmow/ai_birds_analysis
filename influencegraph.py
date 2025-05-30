@@ -2,6 +2,7 @@ import pandas as pd
 import os
 import matplotlib.pyplot as plt
 import numpy as np
+from scipy.stats import pearsonr
 
 #The goal is to create a dictionary for a specific date of dataframes, where the keys are the countries
 #and the values are tuples of the form (pressure_type,value)
@@ -56,7 +57,7 @@ def extract_bird_data_for_date(folder_path, date, country_codes_path):
     :param folder_path: Chemin du dossier contenant les fichiers CSV.
     :param date: Date pour laquelle extraire les données (format identique à celui des fichiers CSV).
     :param country_codes_path: Chemin vers le fichier des codes pays.
-    :return: Un dictionnaire avec les pays comme clés et des dictionnaires (numéro de l'oiseau: (count, count_with_rendements)).
+    :return: Un dictionnaire avec les pays comme clés et comme valeurs des dictionnaires (numéro de l'oiseau: (count, count_with_rendements)).
     """
     # Charger les codes pays
     country_codes = pd.read_csv(country_codes_path, sep=";", index_col=0, header=0, names=["code", "country"])
@@ -100,8 +101,6 @@ country_codes_path = "country codes.csv"  # Chemin vers le fichier des codes pay
 
 bird_data_for_date = extract_bird_data_for_date(bird_folder_path, date_t, country_codes_path)
 
-print(np.isnan(bird_data_for_date['Austria']['5190'][0])) # Exemple de champ non rempli :NaN
-
 
 
 
@@ -110,37 +109,106 @@ def correlation(country, bird, pressure):
     X=[]
     Y=[]
     for date_t in range(1980,2017):
-        value=extract_bird_data_for_date(bird_folder_path,date_t,country_codes_path)[country][bird][1]
-        if not np.isnan(value):
-            X.append(extract_data_for_date_from_folder(folder_path, date_t)[country+"_rendements"][pressure])
+        value=extract_bird_data_for_date(bird_folder_path,date_t,country_codes_path)[country][bird][1] #replace "Germany East" by country
+        if not np.isnan(value) and value!=0:
+            X.append(extract_data_for_date_from_folder(folder_path, date_t)[country+"Germany_rendements"][pressure]) #replace "Germany" by country
             Y.append(value)
     X=X[:-1]
     Y=Y[1:]
 
-    plt.scatter(X, Y)
-    plt.xlabel(f"{pressure} (Pressure)")
-    plt.ylabel(f"Bird rendements ({bird})")
-    plt.title(f"Correlation between {pressure} and Bird rendements in {country}")
-    plt.legend([f"{country} - {bird} vs {pressure}"])
+    plt.scatter(X, Y, label= pressure )
+
+#plot 
+'''
+correlation("Poland","10190","Hic")
+plt.xlabel(f"(Pressure)")
+plt.ylabel(f"Bird rendements")
+plt.legend(loc="upper right", fontsize="small")
+plt.title(f"Correlation between HIC pressure rendement and Bird 10190 rendement in Poland")
+plt.show()
+'''
+country="Germany East"
+bird='5190'
+
+def correlation_all(country,bird):
+    for pressure in ["Far","For","Hic","Nat","Pla","Tem","Uaa","Urb"]:
+        correlation(country,bird, pressure)
+    plt.xlabel(f"(Pressure)")
+    plt.ylabel(f"Bird rendements")
+    plt.legend(loc="upper right", fontsize="small")
+    plt.title(f"Correlation between pressure rendements and Bird rendements in {country}")
     plt.show()
 
+correlation_all(country,bird)
 
-#correlation("Lithuania", '5190', "Tem")
+def correlation_coefficient(country, bird, pressure):
+    #compute correlation coeff between bird rendements and pressure rendements earlier in time for a specific country and bird
+    X=[]
+    Y=[]
+    for date_t in range(1980,2017):
+        if bird in extract_bird_data_for_date(bird_folder_path,date_t,country_codes_path)[country]:
+            value=extract_bird_data_for_date(bird_folder_path,date_t,country_codes_path)[country][bird][1]
+            if not np.isnan(value) and value!=0:
+                X.append(extract_data_for_date_from_folder(folder_path, date_t)[country+"_rendements"][pressure]) #replace "Germany" by country
+                Y.append(value)
 
+    X=X[:-1]
+    Y=Y[1:]
+    if len(X)<2 or len(Y)<2:
+        r=-1
+        p_value=1
+    else:
+        r, p_value = pearsonr(X, Y)
+        if np.isnan(p_value):
+                p_value=1
+    
+    return(p_value)
+    
+    """"
+    print(f"Coefficient de corrélation de Pearson : {r:.3f}")
+    print(f"Valeur p associée : {p_value:.3e}")
+    print(p_value<0.05)
+    """
+#correlation_coefficient(country,bird,'Tem')
+
+
+pressures=["Far","For","Hic","Nat","Pla","Tem","Uaa","Urb"]
+def find_correlation(country,folder_path="BirdCounts_with_rendements"):
+    bird_numbers = []
+    p_values={}
+    # Iterate through all files in the folder
+    for filename in os.listdir(folder_path):
+        if filename.startswith("BIRD_") and filename.endswith(".csv"):
+            # Extract the bird number from the filename
+            bird_number = filename.split('_')[1].split('.')[0]
+            bird_numbers.append(bird_number)
+    np.random.shuffle(bird_numbers)
+    for bird_number in bird_numbers:
+            pressure_dict={}
+            for pressure in pressures:
+                p_value = correlation_coefficient(country,bird_number,pressure)
+                if p_value<0.05:
+                    return("country"+str(country)+"bird_number:"+str(bird_number))
+                else:
+                    pressure_dict[pressure]=p_value
+            p_values[bird_number]=pressure_dict
+    print(bird_numbers)
+
+#find_correlation(country)
 
 def population(country,bird):
     Y=[extract_bird_data_for_date(bird_folder_path,date_t,country_codes_path)[country][bird][0] for date_t in range(1980,2017)]
     X=[i for i in range(1980,2017)]
     
-
-        
-    plt.scatter(X, Y)
+    
+            
+    plt.plot(X, Y,marker='o')
     plt.xlabel(f"time(year)")
     plt.ylabel(f"Bird count ({bird})")
     plt.title(f"Evolution of birds in time")
     plt.show()
 
-population("Belgium-Brussels",1220)
+#population("Germany East","5190")
 
 def population_all_countries(bird):
     """
@@ -166,7 +234,7 @@ def population_all_countries(bird):
     plt.show()
 
 # Example usage:
-# population_all_countries('15670')
+#population_all_countries('10190')
 
 import random
 
@@ -210,9 +278,10 @@ def plot_test():
     plt.show()
 
 bird_folder_path = "BirdCounts_with_rendements"  
-date_t = 2010 
-bird='5820'
-country="Italy"
+date_t = 2016
+bird='5190'
+country="Lithuania"
+
 #plot_test()
 
 country_names = [
